@@ -70,40 +70,40 @@
 
 ; ; simple recursive function with variadic args
 (def down-range (fn* down-range [start & args]
-    (if (> start 0)
-        (cons start (down-range (dec start)))
-        [0])))
+                 (if (> start 0)
+                     (cons start (down-range (dec start)))
+                     [0])))
 (assert (= '(5 4 3 2 1 0) (down-range 5)))
 
 ; ; complex recursive function
 (def reverse (fn* reverse [coll]
-    (if (not (seq? coll))
-        (throw "argument must be a sequence"))
-    (if (nil? (next coll))
-        [(first coll)]
-        (let [first-value   (first coll)
-               reversed      (reverse (next coll))]
-            (conj reversed first-value)))))
+              (if (not (seq? coll))
+                  (throw "argument must be a sequence"))
+              (if (nil? (next coll))
+                  [(first coll)]
+                  (let [first-value   (first coll)
+                         reversed      (reverse (next coll))]
+                      (conj reversed first-value)))))
 (assert (= '(5 4 3 2 1) (reverse '(1 2 3 4 5))))
 
 (def fib (fn* fib [n]
-  (if (> n 1)  ; if n=0 or n=1 return n
-    (+ (fib (- n 1)) (fib (- n 2)))
-    n)))
+          (if (> n 1)  ; if n=0 or n=1 return n
+            (+ (fib (- n 1)) (fib (- n 2)))
+            n)))
 (assert (= 2584 (fib 18)))
 
 ; ; multi arity function
 (def greet (fn* greet
-    ([] "Hello!")
-    ([name] (str "Hello " name "!"))
-    ([prefix name] (str prefix " " name "!"))))
+            ([] "Hello!")
+            ([name] (str "Hello " name "!"))
+            ([prefix name] (str prefix " " name "!"))))
 (assert (= "Hello!" (greet)))
 (assert (= "Hello Bob!" (greet "Bob")))
 (assert (= "Hi Bob!" (greet 'Hi 'Bob)))
 
 ; ; tests for special forms
 (def nested-special-forms (fn* defn [name args & body]
-    `(def ~name (fn* ~args (do (quote ~body))))))
+                           `(def ~name (fn* ~args (do (quote ~body))))))
 
 (assert (= '(def hello (fn* [arg] (do (quote (arg)))))
            (nested-special-forms 'hello '[arg] 'arg)))
