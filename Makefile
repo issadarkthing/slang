@@ -7,9 +7,10 @@ fmt:
 	@echo "Formatting..."
 	@goimports -l -w ./
 
-install:
-	@echo "Installing slang to GOBIN..."
-	@go install -ldflags="-X main.version=${VERSION} -X main.commit=${COMMIT}" ./cmd/xlisp/
+install: build
+	@echo "Installing..."
+	sudo mkdir -p /etc/xlisp
+	sudo cp ./bin/xlisp /usr/local/bin && sudo cp ./lib/core.xlisp /etc/xlisp/core.xlisp
 
 clean:
 	@echo "Cleaning up..."
@@ -29,5 +30,5 @@ benchmark:
 	@go test -benchmem -run="none" -bench="Benchmark.*" -v ./...
 
 build:
-	@mkdir -p ./bin
+	mkdir -p ./bin
 	@go build -ldflags="-X main.version=${VERSION} -X main.commit=${COMMIT}" -o ./bin/xlisp ./cmd/xlisp/

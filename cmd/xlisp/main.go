@@ -41,7 +41,7 @@ func main() {
 	var result sabre.Value
 	var err error
 
-	resolvedPath, err := filepath.Abs("lib/core.lisp")
+	resolvedPath, err := filepath.Abs("/etc/xlisp/core.xlisp")
 	if err != nil {
 		fatalf("error: %v\n", err)
 	}

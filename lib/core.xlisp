@@ -80,6 +80,12 @@
         (throw "argument must be a collection, not " (type coll)))
     (apply coll.Conj vals))
 
+
+(defn drop [n coll]
+  (if (or (zero? n) (> n (count coll)))
+    coll
+    (recur (dec n) (next coll))))
+
 ; (defn swap! [atom f]
 ;   (atom.UpdateState f))
 
