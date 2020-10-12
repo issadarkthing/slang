@@ -47,12 +47,34 @@ func (slang *Xlisp) Eval(v sabre.Value) (sabre.Value, error) {
 // ReadEval reads from the given reader and evaluates all the forms
 // obtained in Slang context.
 func (slang *Xlisp) ReadEval(r io.Reader) (sabre.Value, error) {
-	return sabre.ReadEval(slang, r)
+	sabreReader := sabre.NewReader(r)
+	sabreReader.SetMacro('!', readSheBang, true)
+	mod, err := sabreReader.All()
+	if err != nil {
+		return nil, err
+	}
+	return sabre.Eval(slang, mod)
+}
+
+// removes shebang line
+func readSheBang(rd *sabre.Reader, _ rune) (sabre.Value, error) {
+	for {
+		r, err := rd.NextRune()
+		if err != nil {
+			return nil, err
+		}
+
+		if r == '\n' {
+			break
+		}
+	}
+
+	return nil, sabre.ErrSkip
 }
 
 // ReadEvalStr reads the source and evaluates it in Slang context.
 func (slang *Xlisp) ReadEvalStr(src string) (sabre.Value, error) {
-	return sabre.ReadEvalStr(slang, src)
+	return slang.ReadEval(strings.NewReader(src))
 }
 
 // Bind binds the given name to the given Value into the slang interpreter
