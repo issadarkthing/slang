@@ -119,12 +119,16 @@ func BindAll(scope sabre.Scope) error {
 		"core/<=":  sabre.ValueOf(LtE),
 
 		// io functions
+		"core/$":         sabre.ValueOf(Shell),
 		"core/print":     sabre.ValueOf(Println),
 		"core/printf":    sabre.ValueOf(Printf),
 		"core/read*":     sabre.ValueOf(Read),
 		"core/random":    sabre.ValueOf(Random),
 		"core/shuffle":   sabre.ValueOf(Shuffle),
 		"core/read-file": sabre.ValueOf(ReadFile),
+
+		// strings
+		"string/split": sabre.ValueOf(splitString),
 
 		"types/Seq":       TypeOf((*sabre.Seq)(nil)),
 		"types/Invokable": TypeOf((*sabre.Invokable)(nil)),

@@ -2,10 +2,13 @@ package xlisp
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/spy16/sabre"
@@ -60,4 +63,44 @@ func ReadFile(name string) (string, error) {
 	}
 
 	return string(content), nil
+}
+
+func createShellOutput(out, err string, exit int) *sabre.HashMap {
+	return &sabre.HashMap{
+		Data: map[sabre.Value]sabre.Value{
+			sabre.Keyword("exit"): sabre.Int64(exit),
+			sabre.Keyword("out"):  sabre.String(out),
+			sabre.Keyword("err"):  sabre.String(err),
+		},
+	}
+}
+
+func Shell(command string) (*sabre.HashMap, error) {
+
+	cmd := exec.Command("bash", "-c", command)
+	var cmdout, cmderr bytes.Buffer
+
+	cmd.Stdout = &cmdout
+	cmd.Stderr = &cmderr
+
+	err := cmd.Run()
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		errMsg := strings.TrimSpace(cmderr.String())
+		return createShellOutput("", errMsg, exitErr.ExitCode()), nil
+	} else if err != nil {
+		return &sabre.HashMap{}, err
+	}
+
+	output := strings.TrimSpace(cmdout.String())
+
+	return createShellOutput(output, "", 0), nil
+}
+
+func splitString(str, sep sabre.String) *sabre.List {
+	result := strings.Split(string(str), string(sep))
+	values := make([]sabre.Value, 0, len(result))
+	for _, v := range result {
+		values = append(values, sabre.String(v))
+	}
+	return &sabre.List{Values: values}
 }
